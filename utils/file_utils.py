@@ -17,7 +17,7 @@ Dependencies:
     - Required libraries: os, glob
 
 Changelog:
-    - v1.0: [2025-04-25] Initial release
+    - v1.0: [2025-04-25] Initial release.
 ==============================================================================
 """
 

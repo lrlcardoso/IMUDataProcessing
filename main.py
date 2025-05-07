@@ -8,7 +8,7 @@ Description:    Entry point for IMU logger data processing pipeline. Loads,
 Author:         Lucas R. L. Cardoso
 Project:        VRRehab_UQ-MyTurn
 Date:           2025-04-25
-Version:        1.1
+Version:        1.2
 ==============================================================================
 Usage:
     python main.py --combineCSV
@@ -22,6 +22,7 @@ Dependencies:
 Changelog:
     - v1.0: Initial release.
     - v1.1: [2025-04-25] Added argument parsing for pipeline modes.
+    - v1.2: [2025-04-28] Added the option to fix the IMU data (--fixDataIssue).
 ==============================================================================
 """
 
@@ -29,6 +30,7 @@ import os
 import re
 import time
 import glob
+import shutil
 import argparse
 from tqdm import tqdm
 from config import (
@@ -93,26 +95,43 @@ def fix_data_issue():
     )
 
     for _, session_dir, logger, logger_raw_folder in logger_folders:
-        # Find all CSV files in each logger folder
-        csv_files = glob.glob(os.path.join(logger_raw_folder, "*.csv"))
+        # === Step 1: Move everything into Original_Data_WithIssues ===
+        backup_folder = os.path.join(logger_raw_folder, "Original_Data_WithIssues")
+        os.makedirs(backup_folder, exist_ok=True)
+
+        for item in os.listdir(logger_raw_folder):
+            src_path = os.path.join(logger_raw_folder, item)
+            dst_path = os.path.join(backup_folder, item)
+            # Skip the backup folder itself
+            if os.path.abspath(src_path) == os.path.abspath(backup_folder):
+                continue
+            shutil.move(src_path, dst_path)
+
+        # === Step 2: Process CSVs inside Original_Data_WithIssues ===
+        csv_files = glob.glob(os.path.join(backup_folder, "*.csv"))
+
+        # Extract date_part from session_dir
+        session_folder = os.path.basename(session_dir)
+        log_path = os.path.join(logger_raw_folder, "00_logfile.txt")
+        match = re.search(r"(\d{8})", session_folder)
+        if not match:
+            with open(log_path, "a") as logf:
+                logf.write(f"[ERROR] Invalid session folder name: '{session_folder}' — no date found\n")
+            print(f"[SKIP] No date found in session folder: {session_folder}")
+            continue
+
+        yyyymmdd = match.group(1)
+        date_part = yyyymmdd[2:]  # e.g., '250217'
+
+ 
         for csv_file in csv_files:
-            # Output directory = same as input but with "Fixed_Data" as subfolder
-            output_dir = os.path.join(os.path.dirname(csv_file), "Fixed_Data")
-            os.makedirs(output_dir, exist_ok=True)
-            # Extract date_part from session_dir (expects SessionX_YYYYMMDD format)
-            session_folder = os.path.basename(session_dir)
-            match = re.search(r"(\d{8})", session_folder)
-            if match:
-                yyyymmdd = match.group(1)  # e.g., '20250217'
-                date_part = yyyymmdd[2:]   # take last 6 chars: '250217'
-            else:
-                date_part = "unknown"
-            # Run the fix
+            output_dir = logger_raw_folder
             fix_imu_file(
                 input_csv=csv_file,
                 output_dir=output_dir,
                 date_part=date_part,
-                time_of_the_session=TIME_OF_THE_SESSION
+                time_of_the_session=TIME_OF_THE_SESSION,
+                log_path=log_path
             )
 
 
