@@ -19,11 +19,11 @@ Changelog:
 ROOT_DIR = r"C:\Users\s4659771\Documents\MyTurn_Project\Data"
 
 # Patient and session selection (edit as required)
-SELECTED_PATIENTS = ["P05"]
-SELECTED_SESSIONS = ["Session1"]
-SELECTED_LOGGERS = ["Logger3"]
+SELECTED_PATIENTS = ["P10"]
+SELECTED_SESSIONS = ["Session2"]
+SELECTED_LOGGERS = ["Logger2"]
 
 # Trim first N minutes from logger data (default: 5)
 TRIM_MINUTES = 5
 
-TIME_OF_THE_SESSION = 10   # or whatever the true session hour is (int, 24h format)
+TIME_OF_THE_SESSION = 11   # or whatever the true session hour is (int, 24h format)
