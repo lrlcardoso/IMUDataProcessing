@@ -23,7 +23,7 @@ SELECTED_PATIENTS = ["P10"]
 SELECTED_SESSIONS = ["Session2"]
 SELECTED_LOGGERS = ["Logger2"]
 
-# Trim first N minutes from logger data (default: 5)
+# Trim first N minutes from logger data
 TRIM_MINUTES = 5
 
-TIME_OF_THE_SESSION = 11   # or whatever the true session hour is (int, 24h format)
+TIME_OF_THE_SESSION = 11   # int, 24h format
