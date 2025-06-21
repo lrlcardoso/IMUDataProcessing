@@ -59,7 +59,7 @@ def preprocess_logger_folder(raw_logger_folder, trim_minutes=5):
     df = combine_csv_files(raw_logger_folder)
     
     # Filter by valid == 1
-    df = df[df['valid'] == 1].reset_index(drop=True)
+    # df = df[df['valid'] == 1].reset_index(drop=True)
 
     # Filter for valid date fields
     df = df[
