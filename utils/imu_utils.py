@@ -7,7 +7,7 @@ Description:    Provides core utility functions for loading, merging,
 Author:         Lucas R. L. Cardoso
 Project:        VRRehab_UQ-MyTurn
 Date:           2025-04-25
-Version:        1.0
+Version:        1.1
 ==============================================================================
 Usage:
     Import as a module:
@@ -19,6 +19,8 @@ Dependencies:
 
 Changelog:
     - v1.0: [2025-04-25] Initial release
+    - v1.1: [2025-06-24] Switched to l_time fields instead of g_times;
+                         added duplicate Unix Time removal for consistency
 ==============================================================================
 """
 
@@ -42,13 +44,13 @@ def combine_csv_files(folder):
 def compute_unix_time(row):
     brisbane = timezone(timedelta(hours=10))  # UTC+10
     dt = datetime(
-        int(row['g_year'])+2000,
-        int(row['g_month']),
-        int(row['g_day']),
-        int(row['g_hour']),
-        int(row['g_minute']),
-        int(row['g_second']),
-        int(row['g_hund']) * 10000  # hundredths to microseconds
+        int(row['l_year'])+2000,
+        int(row['l_month']),
+        int(row['l_day']),
+        int(row['l_hour']),
+        int(row['l_minute']),
+        int(row['l_second']),
+        int(row['l_hund']) * 10000  # hundredths to microseconds
     )
     dt = dt.replace(tzinfo=brisbane)
     return dt.timestamp()  # in seconds (float, includes ms)
@@ -63,9 +65,9 @@ def preprocess_logger_folder(raw_logger_folder, trim_minutes=5):
 
     # Filter for valid date fields
     df = df[
-        (df['g_year'] >= 25) &
-        (df['g_month'] >= 1) & (df['g_month'] <= 12) &
-        (df['g_day'] >= 1) & (df['g_day'] <= 31)
+        (df['l_year'] >= 25) &
+        (df['l_month'] >= 1) & (df['l_month'] <= 12) &
+        (df['l_day'] >= 1) & (df['l_day'] <= 31)
     ].reset_index(drop=True)
 
     # Remove any existing 'Unix Time' column before creating a new one.
@@ -80,6 +82,9 @@ def preprocess_logger_folder(raw_logger_folder, trim_minutes=5):
     # Compute UNIX time
     tqdm.pandas(desc="🔄 [2/2] Computing Unix Time")
     df['Unix Time'] = df.progress_apply(compute_unix_time, axis=1)
+
+    # Remove duplicate Unix Time values
+    df = df[~df['Unix Time'].duplicated()].reset_index(drop=True)
 
     # Trim first N minutes
     min_time = df['Unix Time'].min()
