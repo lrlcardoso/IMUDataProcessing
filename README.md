@@ -1,6 +1,6 @@
-# RehabTrack_Workflow – IMU Data Processing
+# RehabTrack Workflow – IMU Data Processing
 
-This is part of the [RehabTrack_Workflow](https://github.com/lrlcardoso/RehabTrack_Workflow): a modular Python pipeline for **tracking and analysing physiotherapy movements**, using video and IMU data.  
+This is part of the [RehabTrack Workflow](https://github.com/lrlcardoso/RehabTrack_Workflow): a modular Python pipeline for **tracking and analysing physiotherapy movements**, using video and IMU data.  
 This module automates the preprocessing of IMU logger CSV data collected during experimental sessions, preparing it for subsequent synchronisation and analysis.
 
 ---
@@ -15,7 +15,7 @@ This module performs:
 - **Saving** processed files in a mirrored folder structure under a `Processed` directory
 
 **Inputs:**
-- Raw IMU CSV files exported from loggers
+- Raw IMU CSV files exported from loggers (IMU logger data recorded using the **[WMORE](https://github.com/NeuroRehack/WMORE)** device—an open-source, wearable IMU developed for rehabilitation research)
 - Configuration file (`config.py`) specifying:
   - Root directory
   - Patients and sessions to process
@@ -108,5 +108,4 @@ Documentation & figures: [CC BY 4.0](LICENSE-docs)
 
 ## 🤝 Acknowledgments
 
-- pandas, NumPy  
-- datetime, zoneinfo  
+- [WMORE](https://github.com/NeuroRehack/WMORE)
